@@ -3,10 +3,9 @@
 import React, { type ComponentType, Component } from "react";
 
 import checkConfigObj from "./checkConfigObj";
-import fpSet from "./helpers/fpSet";
 import getDisplayName from "./helpers/getDisplayName";
 
-import type { ConfigurationType } from "./uniformed.flow";
+import type { ConfigurationType, HandlersType } from "./uniformed.flow";
 export type { UniformedProp } from "./uniformed.flow";
 
 type WrappedComponentState = {
@@ -28,14 +27,37 @@ export const uniform = (configObj: ConfigurationType) => (ComponentToWrap: Compo
         values: { ...configObj.initialValues }
       };
 
-      this.handlers = Object.keys(configObj.initialValues).reduce((handlerObj, keyName) => {
-        handlerObj[keyName] = this.createHandler(keyName);
-        return handlerObj;
-      }, {});
+      const handlers = configObj.handlers ? this.connectHandlers(configObj.handlers) : {};
+      Object.keys(configObj.initialValues).forEach(keyName => {
+        if (keyName in handlers) return;
+        handlers[keyName] = this.createBasicHandler(keyName);
+      });
+
+      this.handlers = handlers;
     }
 
-    createHandler = (keyName: string) => (evt: SyntheticEvent<HTMLInputElement>) => {
-      this.setState({ values: fpSet(this.state.values, keyName, evt.currentTarget.value) });
+    connectHandlers = (handlers: HandlersType) => {
+      const connectedHandlers = {};
+      for (const key in handlers) {
+        const valueResolver = handlers[key];
+        connectedHandlers[key] = (evt: SyntheticEvent<HTMLInputElement>) => {
+          const valueResolverArgObj = { props: this.props, state: this.state.values, update: this.handleUpdate };
+          if (key in configObj.initialValues) {
+            // if the key exists, we pass in its value as a parameter to the valueResolver
+            valueResolverArgObj["$" + key] = evt.currentTarget.value;
+          }
+          valueResolver(valueResolverArgObj);
+        };
+      }
+      return connectedHandlers;
+    };
+
+    createBasicHandler = (keyName: string) => (evt: SyntheticEvent<HTMLInputElement>) => {
+      this.setState({ values: { ...this.state.values, [keyName]: evt.currentTarget.value } });
+    };
+
+    handleUpdate = (stateUpdates: Object) => {
+      this.setState({ values: { ...this.state.values, ...stateUpdates } });
     };
 
     render() {
