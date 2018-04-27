@@ -20,6 +20,7 @@
     "react-dom": "~16.3.0-alpha.2",
     "sass-loader": "~6.0.6",
     "style-loader": "~0.20.1",
+    "uniformed": "0.0.0",
     "webpack": "~3.10.0"
   },
   "devDependencies": {
