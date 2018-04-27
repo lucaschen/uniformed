@@ -1,6 +1,6 @@
 {
   "name": "uniformed",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "Trying really hard to define a non-standard standard for React forms.",
   "main": "lib/uniformed.js",
   "module": "lib/uniformed.es.js",
