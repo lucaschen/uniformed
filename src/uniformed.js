@@ -39,14 +39,14 @@ export const uniform = (configObj: ConfigurationType) => (ComponentToWrap: Compo
     connectHandlers = (handlers: HandlersType) => {
       const connectedHandlers = {};
       for (const key in handlers) {
-        const valueResolver = handlers[key];
+        const handler = handlers[key];
         connectedHandlers[key] = (evt: SyntheticEvent<HTMLInputElement>) => {
-          const valueResolverArgObj = { props: this.props, state: this.state.values, update: this.handleUpdate };
+          const handlerArgObj = { props: this.props, state: this.state.values, update: this.handleUpdate };
           if (key in configObj.initialValues) {
-            // if the key exists, we pass in its value as a parameter to the valueResolver
-            valueResolverArgObj["$" + key] = evt.currentTarget.value;
+            // if the key exists, we pass in its value as a parameter to the handler
+            handlerArgObj["$" + key] = evt.currentTarget.value;
           }
-          valueResolver(valueResolverArgObj);
+          handler(handlerArgObj);
         };
       }
       return connectedHandlers;
