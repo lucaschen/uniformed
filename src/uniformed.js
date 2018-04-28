@@ -1,5 +1,6 @@
 // @flow
 
+import "babel-polyfill";
 import React, { type ComponentType, Component } from "react";
 
 import checkConfigObj from "./checkConfigObj";
@@ -40,13 +41,13 @@ export const uniform = (configObj: ConfigurationType) => (ComponentToWrap: Compo
       const connectedHandlers = {};
       for (const key in handlers) {
         const handler = handlers[key];
-        connectedHandlers[key] = (evt: SyntheticEvent<HTMLInputElement>) => {
+        connectedHandlers[key] = async (evt: SyntheticEvent<HTMLInputElement>) => {
           const handlerArgObj = { props: this.props, state: this.state.values, update: this.handleUpdate };
           if (key in configObj.initialValues) {
             // if the key exists, we pass in its value as a parameter to the handler
             handlerArgObj["$" + key] = evt.currentTarget.value;
           }
-          handler(handlerArgObj);
+          await handler(handlerArgObj);
         };
       }
       return connectedHandlers;

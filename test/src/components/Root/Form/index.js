@@ -12,16 +12,18 @@ const configObj = {
           .reverse()
           .join("")
       }),
-    submitForm: ({ props, state, update }) => {
-      update({
-        submitting: true
-      });
-      setTimeout(() => {
+    submitForm: ({ props, state, update }) =>
+      new Promise(resolve => {
         update({
-          submitting: false
+          submitting: true
         });
-      }, 2000);
-    }
+        setTimeout(() => {
+          update({
+            submitting: false
+          });
+          resolve();
+        }, 2000);
+      })
   },
   initialValues: {
     email: "",

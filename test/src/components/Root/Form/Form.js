@@ -8,9 +8,10 @@ type Props = {
 };
 
 export default class Form extends Component<Props> {
-  handleSubmit = (evt: SyntheticEvent<HTMLFormElement>) => {
+  handleSubmit = async (evt: SyntheticEvent<HTMLFormElement>) => {
     evt.preventDefault();
-    this.props.uniformed.handlers.submitForm();
+    await this.props.uniformed.handlers.submitForm();
+    alert("Submit finished!");
   };
 
   render() {
